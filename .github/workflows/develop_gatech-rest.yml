@@ -1,12 +1,19 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
+
 name: Build and deploy JAR app to Azure Web App - gatech-rest
+
+env:
+  AZURE_WEBAPP_NAME: testapiappcase  # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: ${{ github.workspace }} # set this to the path to your web app project
+  JAVA_VERSION: '1.8'                # set this to the node version to use
+  AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
 
 on:
   push:
     branches:
-      - develop
+      - master
 
 jobs:
   build-and-deploy:
@@ -21,12 +28,12 @@ jobs:
         java-version: '11'
 
     - name: Build with Maven
-      run: mvn clean install
+      run: mvn package --file pom.xml
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v1
-      with:
-        app-name: 'gatech-rest'
-        slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_01892e0fd72e41699b762654d5c2b037 }}
-        package: '${{ github.workspace }}/target/*.jar'
+        
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ env.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/target/*.jar':  
